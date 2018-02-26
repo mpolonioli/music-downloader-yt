@@ -18,6 +18,7 @@ import com.mpatric.mp3agic.NotSupportedException;
 import com.mpatric.mp3agic.UnsupportedTagException;
 
 import net.mpolonioli.musicdownloaderyt.playlist.Playlist;
+import net.mpolonioli.musicdownloaderyt.playlist.PlaylistManager;
 import net.mpolonioli.musicdownloaderyt.playlist.Song;
 
 public class MusicDownloader {
@@ -40,6 +41,7 @@ public class MusicDownloader {
 	public void downloadSong(Song song, File outputDirectory, long maxResults) {
 		String artist = song.getArtist();
 		String title = song.getName();
+		String ytUrl = song.getYtUrl();
 
 		// create the artist directory if not exist.
 		File artistDir = new File(outputDirectory.getAbsolutePath() + "/" + artist);
@@ -53,16 +55,21 @@ public class MusicDownloader {
 		if(!songFile.exists())
 		{
 			// search the video, print the result and download the audio.
-			SearchListResponse searchResponse = YT_SEARCH.searchVideos(queryTerm, maxResults);
-			List<SearchResult> searchResultList = searchResponse.getItems();
-			if (searchResultList != null) {
-				SearchResult searchResult = findBetter(searchResultList);
-				prettyPrint(searchResult, queryTerm);
-				String videoId = searchResult.getId().getVideoId();
+			if(ytUrl == null) {
+				SearchListResponse searchResponse = YT_SEARCH.searchVideos(queryTerm, maxResults);
+				List<SearchResult> searchResultList = searchResponse.getItems();
+				if (searchResultList != null) {
+					SearchResult searchResult = findBetter(searchResultList);
+					prettyPrint(searchResult, queryTerm);
+
+					ytUrl = "https://www.youtube.com/watch?v=" + searchResult.getId().getVideoId();	
+				}
+			}
+			if(ytUrl != null) {
 				try {
 					// define the file path without extension.
 					Process downloadProcess = YT_DOWNLOADER.downloadAudio(
-							"https://www.youtube.com/watch?v=" + videoId,
+							ytUrl,
 							"mp3",
 							artistDir.getAbsolutePath() + "/" + queryTerm + " (untagged).%(ext)s");
 					try {
@@ -91,7 +98,7 @@ public class MusicDownloader {
 			System.out.println("\n-------------------------------------------------------------\n");
 		}
 	}
-	
+
 	public void downloadSong(Song song, File outputDirectory) {
 		downloadSong(song, outputDirectory, DEFAULT_MAX_RESULTS);
 	}
@@ -110,7 +117,7 @@ public class MusicDownloader {
 	 * Returns null if list is empty.
 	 * TODO add more criteria.
 	 */
-	private static SearchResult findBetter(List<SearchResult> searchResultList) {
+	public static SearchResult findBetter(List<SearchResult> searchResultList) {
 		if(searchResultList.isEmpty())
 		{
 			return null;
@@ -194,6 +201,40 @@ public class MusicDownloader {
 	private static void prettyPrint(SearchResult searchResult, String queryTerm) {
 		Iterator<SearchResult> iterator = Arrays.asList(searchResult).iterator();
 		prettyPrint(iterator, queryTerm);
+	}
+	
+	public Playlist updatePlaylist(File inputFile, long maxResults) throws IOException {
+		Playlist result = updatePlaylist(PlaylistManager.getPlaylistFromFile(inputFile), maxResults);
+		inputFile.delete();
+		PlaylistManager.saveToFile(result, inputFile);
+		return result;
+	}
+	
+	public Playlist updatePlaylist(File inputFile) throws IOException {
+		return updatePlaylist(inputFile, DEFAULT_MAX_RESULTS);
+	}
+
+	public Playlist updatePlaylist(Playlist playlist, long maxResults) {
+		Playlist result = new Playlist(playlist.getName());
+		for(Song song : playlist.getSongs()) {
+			if(song.getYtUrl() == null ) {
+				String queryTerm = song.getArtist() + " - " + song.getName();
+				SearchListResponse searchResponse = YT_SEARCH.searchVideos(queryTerm, maxResults);
+				List<SearchResult> searchResultList = searchResponse.getItems();
+				if (searchResultList != null) {
+					SearchResult searchResult = findBetter(searchResultList);
+					prettyPrint(searchResult, queryTerm);
+
+					song.setYtUrl("https://www.youtube.com/watch?v=" + searchResult.getId().getVideoId());	
+				}
+			}
+			result.addSong(song);
+		}
+		return result;
+	}
+	
+	public Playlist updatePlaylist(Playlist playlist) throws IOException {
+		return updatePlaylist(playlist, DEFAULT_MAX_RESULTS);
 	}
 
 	// TODO

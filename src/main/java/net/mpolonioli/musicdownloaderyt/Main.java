@@ -1,11 +1,8 @@
 package net.mpolonioli.musicdownloaderyt;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
-
-import net.mpolonioli.musicdownloaderyt.playlist.PlaylistManager;
 
 public class Main {
 
@@ -36,9 +33,9 @@ public class Main {
 		MusicDownloader downloader = new MusicDownloader(youtubedlPath);
 		
 		try {
-			downloader.downloadPlaylist(PlaylistManager.getPlaylistFromFile(inputFile), outputDirectory);
-		} catch (FileNotFoundException e) {
-			System.err.println("There was a FileNotFoundException: " + e.getCause() + " : " + e.getMessage());
+			downloader.downloadPlaylist(downloader.updatePlaylist(inputFile), outputDirectory);
+		} catch (IOException e) {
+			System.err.println("There was a IOException: " + e.getCause() + " : " + e.getMessage());
 		}
 	}
 }

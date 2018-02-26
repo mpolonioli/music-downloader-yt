@@ -13,13 +13,16 @@ public class PlaylistManager {
 		
 	public static Playlist getPlaylistFromFile(File file) throws FileNotFoundException {
 		Playlist playlist = new Playlist(file.getName());
-		Scanner sc = new Scanner(file);
+		Scanner sc = new Scanner(file, "UTF-8");
 		while(sc.hasNextLine()) {
 			String line = sc.nextLine();
-			if(line.contains("|"))
-			{
+			if(line.contains("|")) {
 				String lineSplit[] = line.split("\\|");
-				playlist.addSong(new Song(lineSplit[1], lineSplit[0]));
+				if(lineSplit.length == 2) {
+					playlist.addSong(new Song(lineSplit[1], lineSplit[0], null));
+				}else if(lineSplit.length == 3) {
+					playlist.addSong(new Song(lineSplit[1], lineSplit[0], lineSplit[2]));
+				}
 			}
 		}
 		sc.close();
@@ -32,9 +35,15 @@ public class PlaylistManager {
 			file.delete();
 		}
 		file.createNewFile();
-		PrintWriter writer = new PrintWriter(file);
+		PrintWriter writer = new PrintWriter(file, "UTF-8");
 		for(Song song : playlist.getSongs()) {
-			writer.println(song.getArtist() + "|" + song.getName());
+			if(song.getYtUrl() == null)
+			{
+				writer.println(song.getArtist() + "|" + song.getName());
+			} else
+			{
+				writer.println(song.getArtist() + "|" + song.getName() + "|" + song.getYtUrl());
+			}
 		}
 		writer.close();
 	}

@@ -10,9 +10,9 @@ import net.mpolonioli.musicdownloaderyt.playlist.Song;
 public class TestPlaylist {
 	
 	public static void main(String[] args) throws IOException {
-	Song song1 = new Song("nome1", "artista1");
-	Song song2 = new Song("nome2", "artista2");
-	Song songEq = new Song("nome1", "artista1");
+	Song song1 = new Song("nome1", "artista1", null);
+	Song song2 = new Song("nome2", "artista2", null);
+	Song songEq = new Song("nome1", "artista1", null);
 	
 	Playlist playlist = new Playlist("playlist1");
 

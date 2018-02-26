@@ -4,20 +4,42 @@ public class Song {
 	
 	private String name;
 	private String artist;
+	private String ytUrl;
 	
-	public Song(String name, String artist) {
+	public Song(String name, String artist, String ytUrl) {
 		setName(name);
 		setArtist(artist);
+		setYtUrl(ytUrl);
 	}
-	
+
 	public boolean equals(Song song) {
-		if(getName().equals(song.getName()) && getArtist().equals(song.getArtist()))
+		if(getYtUrl() != null && song.getYtUrl() != null) 
 		{
-			return true;
+			if(
+					getName().equals(song.getName()) && 
+					getArtist().equals(song.getArtist()) &&
+					getYtUrl().equals(song.getYtUrl())
+					)
+			{
+				return true;
+			} else
+			{
+				return false;
+			}	
 		} else
 		{
-			return false;
-		}		
+			if(
+					getName().equals(song.getName()) && 
+					getArtist().equals(song.getArtist())
+					)
+			{
+				return true;
+			} else
+			{
+				return false;
+			}
+		}
+	
 	}
 
 	public String getName() {
@@ -34,6 +56,14 @@ public class Song {
 
 	public void setArtist(String artist) {
 		this.artist = artist;
+	}
+
+	public String getYtUrl() {
+		return ytUrl;
+	}
+
+	public void setYtUrl(String ytUrl) {
+		this.ytUrl = ytUrl;
 	}
 
 }
