@@ -62,10 +62,10 @@ public class Main {
         }
 
         System.out.println(
-        		"Launch Parameters" + "\n" +
-        		"Output Directory: " + outDir.getAbsolutePath() + "\n" +
-        		"Playlist File: " + inFile.getAbsolutePath() + "\n" +
-        		"Youtube-dl path: " + youtubeDlPath
+        		"Launch Parameters\n" +
+        		"\nOutput Directory: " + outDir.getAbsolutePath() +
+        		"\nPlaylist File: " + inFile.getAbsolutePath() +
+        		"\nYoutube-dl path: " + youtubeDlPath + "\n"
         		);
 
 		MusicDownloader downloader = new MusicDownloader(youtubeDlPath);
