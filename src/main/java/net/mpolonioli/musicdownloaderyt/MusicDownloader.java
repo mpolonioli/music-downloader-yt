@@ -38,19 +38,23 @@ public class MusicDownloader {
 		YT_DOWNLOADER = new YTDownloader(youtubedlPath);
 	}
 
-	public void downloadSong(Song song, File outputDirectory, long maxResults) {
+	public void downloadSong(Song song, File outputDirectory, boolean classify, long maxResults) {
 		String artist = song.getArtist();
 		String title = song.getName();
 		String ytUrl = song.getYtUrl();
-
-		// create the artist directory if not exist.
-		File artistDir = new File(outputDirectory.getAbsolutePath() + "/" + artist);
-		artistDir.mkdirs();
-
+		
 		// define the query to search.
 		String queryTerm = artist + " - " + title;
 
-		File songFile = new File(artistDir.getAbsolutePath() + "/" + queryTerm + ".mp3");
+		// create the artist directory if not exist and if classify == true.
+		File songFile;
+		if(classify) {
+			File artistDir = new File(outputDirectory.getAbsolutePath() + "/" + artist);
+			artistDir.mkdirs();
+			songFile = new File(artistDir.getAbsolutePath() + "/" + queryTerm + ".mp3");
+		} else {
+			songFile = new File(outputDirectory.getAbsolutePath() + "/" + queryTerm + ".mp3");
+		}
 
 		if(!songFile.exists())
 		{
@@ -71,7 +75,7 @@ public class MusicDownloader {
 					Process downloadProcess = YT_DOWNLOADER.downloadAudio(
 							ytUrl,
 							"mp3",
-							artistDir.getAbsolutePath() + "/" + queryTerm + " (untagged).%(ext)s");
+							songFile.getAbsolutePath() + " (untagged).%(ext)s");
 					try {
 						downloadProcess.waitFor();
 					} catch (InterruptedException e) {
@@ -81,7 +85,7 @@ public class MusicDownloader {
 					System.err.println("There was an IO error: " + e.getCause() + " : " + e.getMessage());
 				}
 				try {
-					Mp3Tagger.setID3V1Tag(artistDir.getAbsolutePath() + "/" + queryTerm + " (untagged).mp3", songFile.getAbsolutePath(), title, artist, true);
+					Mp3Tagger.setID3V1Tag(songFile.getAbsolutePath() + " (untagged).mp3", songFile.getAbsolutePath(), title, artist, true);
 				} catch (UnsupportedTagException | InvalidDataException | NotSupportedException | IOException e) {
 					System.err.println("There was an error during the tag process with song " + queryTerm + ": " + e.getCause() + " : " + e.getMessage());
 				}
@@ -99,16 +103,16 @@ public class MusicDownloader {
 		}
 	}
 
-	public void downloadSong(Song song, File outputDirectory) {
-		downloadSong(song, outputDirectory, DEFAULT_MAX_RESULTS);
+	public void downloadSong(Song song, File outputDirectory, boolean classify) {
+		downloadSong(song, outputDirectory, classify, DEFAULT_MAX_RESULTS);
 	}
 
-	public void downloadPlaylist(Playlist playlist, File outputDirectory) {
+	public void downloadPlaylist(Playlist playlist, File outputDirectory, boolean classify) {
 		List<Song> songList = playlist.getSongs();
 
 		for(Song song : songList)
 		{
-			downloadSong(song, outputDirectory);
+			downloadSong(song, outputDirectory, classify);
 		}
 	}
 

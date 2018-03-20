@@ -31,6 +31,9 @@ public class Main {
 		Option dlPath = new Option("y", "youtube-dl", true, "Path to youtube-dl (default is 'youtube-dl')");
 		options.addOption(dlPath);
 		
+		Option classify = new Option("c", "classify", true, "Classify songs in artist sub-folders (default is true)");
+		options.addOption(classify);
+		
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
         CommandLine cmd;
@@ -60,18 +63,24 @@ public class Main {
         } else {
         	youtubeDlPath = "youtube-dl";
         }
+        
+        boolean cl = true;
+        if(cmd.getOptionValue('c') != null) {
+        	cl = Boolean.parseBoolean(cmd.getOptionValue('c'));
+        }
 
         System.out.println(
         		"Launch Parameters\n" +
         		"\nOutput Directory: " + outDir.getAbsolutePath() +
         		"\nPlaylist File: " + inFile.getAbsolutePath() +
-        		"\nYoutube-dl path: " + youtubeDlPath + "\n"
+        		"\nYoutube-dl path: " + youtubeDlPath + 
+        		"\nClassify: " + cl + "\n"
         		);
 
 		MusicDownloader downloader = new MusicDownloader(youtubeDlPath);
 		
 		try {
-			downloader.downloadPlaylist(downloader.updatePlaylist(inFile), outDir);
+			downloader.downloadPlaylist(downloader.updatePlaylist(inFile), outDir, cl);
 		} catch (IOException e) {
 			System.err.println("There was a IOException: " + e.getCause() + " : " + e.getMessage());
 		}
