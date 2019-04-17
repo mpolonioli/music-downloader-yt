@@ -24,7 +24,7 @@ import net.mpolonioli.musicdownloaderyt.playlist.Song;
 public class MusicDownloader {
 
 	private static final long DEFAULT_MAX_RESULTS = 5;
-	private final String API_KEY = "AIzaSyBZSvKQzYZ0GvGGPSfMXoCoxlYTPlxQ-pQ";
+	private final String API_KEY = "AIzaSyDUkzBCDb2rcOIpQU3IbJnmEi5_r1uMJ3I";
 	private final YTSearch YT_SEARCH;
 	private final YTDownloader YT_DOWNLOADER;
 	private final String APP_NAME = "music-downloader-yt";
@@ -91,15 +91,11 @@ public class MusicDownloader {
 				}
 			}else
 			{
-				System.out.println("\n-------------------------------------------------------------\n");
 				System.out.println(" The search on query: " + queryTerm + " returned a null result.");
-				System.out.println("\n-------------------------------------------------------------\n");
 			}
 		}else
 		{
-			System.out.println("\n-------------------------------------------------------------\n");
 			System.out.println(" The song " + songFile.getName() + " already exist. Search and download skipped.");
-			System.out.println("\n-------------------------------------------------------------\n");
 		}
 	}
 
@@ -110,9 +106,14 @@ public class MusicDownloader {
 	public void downloadPlaylist(Playlist playlist, File outputDirectory, boolean classify) {
 		List<Song> songList = playlist.getSongs();
 
+		int count = 0;
 		for(Song song : songList)
 		{
+			count++;
+			System.out.println("\n PROCESSING SONG " + count + "/" + songList.size() + ": " + song.getArtist() + " - " + song.getName());
+			System.out.println("-------------------------------------------------------------");
 			downloadSong(song, outputDirectory, classify);
+			System.out.println("-------------------------------------------------------------");
 		}
 	}
 
