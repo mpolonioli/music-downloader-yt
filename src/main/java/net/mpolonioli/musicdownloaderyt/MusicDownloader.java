@@ -42,7 +42,7 @@ public class MusicDownloader {
 		{
 			// search the video, print the result and download the audio.
 			if(ytUrl == null) {
-				System.out.println(" No YouTube URI specified for song [" + queryTerm + "]");
+				System.out.println(" No YouTube URI specified. Download skipped");
 			} else {
 				try {
 					// define the file path without extension.
@@ -66,7 +66,7 @@ public class MusicDownloader {
 			}
 		}else
 		{
-			System.out.println(" The song " + songFile.getName() + " already exist. Search and download skipped.");
+			System.out.println(" The song " + songFile.getName() + " already exist. Download skipped.");
 		}
 	}
 
