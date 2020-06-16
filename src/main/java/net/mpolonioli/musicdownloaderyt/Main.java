@@ -11,6 +11,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import net.mpolonioli.musicdownloaderyt.playlist.PlaylistManager;
+
 public class Main {
 
 	public static void main(String[] args) {
@@ -80,7 +82,7 @@ public class Main {
 		MusicDownloader downloader = new MusicDownloader(youtubeDlPath);
 		
 		try {
-			downloader.downloadPlaylist(downloader.updatePlaylist(inFile), outDir, cl);
+			downloader.downloadPlaylist(PlaylistManager.getPlaylistFromFile(inFile), outDir, cl);
 		} catch (IOException e) {
 			System.err.println("There was a IOException: " + e.getCause() + " : " + e.getMessage());
 		}
